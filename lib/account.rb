@@ -1,9 +1,12 @@
-class Account
-  attr_reader :balance, :history
+require 'printer'
 
-  def initialize
+class Account
+  attr_reader :balance, :history, :printer
+
+  def initialize(printer = Printer.new)
     @balance = 0
     @history = []
+    @printer  = printer
   end
 
   def credit(amount, date = today)
@@ -17,36 +20,18 @@ class Account
   end
 
   def print_statement
-    statement_print
+    printer.view_statement(@history)
   end
 
   private
     def add_transaction(amount, date, type)
-      transaction = {date: date, credit: currencify(amount), debit: nil, balance: currencify(@balance)} if type == :deposit
-      transaction = {date: date, credit: nil, debit: currencify(amount), balance: currencify(@balance)} if type == :withdraw
+      transaction = {date: date, credit: amount, debit: nil, balance: @balance} if type == :deposit
+      transaction = {date: date, credit: nil, debit: amount, balance: @balance} if type == :withdraw
       @history << transaction
-    end
-
-    def stringfy transaction
-      "#{transaction[:date]} || #{transaction[:credit]} || #{transaction[:debit]} || #{transaction[:balance]}"
-    end
-
-    def currencify amount
-      '%.2f' % amount
     end
 
     def today
       Time.now.strftime("%m/%d/%y")
-    end
-
-    def combined_transactions
-      @history.reverse.inject("") do |statement, transaction|
-        statement << (stringfy(transaction) + "\n")
-      end.strip
-    end
-
-    def statement_print
-      "date || credit || debit || balance\n"  +  combined_transactions
     end
 
     def reduce_balance(amount)
