@@ -12,7 +12,7 @@ class Printer
     end
 
     def stringfy(transaction)
-      "#{transaction[:date]} || #{currencify transaction[:credit]} || #{currencify transaction[:debit]} || #{currencify transaction[:balance]}" + "\n"
+     "#{transaction.date} || #{currencify transaction.credit} || #{currencify transaction.debit} || #{currencify transaction.balance}" + "\n"
     end
 
     def currencify amount
